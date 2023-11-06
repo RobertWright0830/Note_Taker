@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const notes = require('./db/db.json');
+let notes = require('./db/db.json');
 
 const PORT = process.env.PORT || 3001;
 
@@ -20,12 +20,15 @@ app.get('/notes', (req, res) => {
   });
 
 // GET Route for notes db file
-app.get('/api/notes', (req, res) => res.json(notes));
+app.get('/api/notes', (req, res) => {
+  notes = JSON.parse(fs.readFileSync('db/db.json', 'utf8'));  
+  res.json(notes)});
+
 
 app.post('/api/notes', (req, res) => {
   const newNote = req.body;
   newNote.id = generateUniqueId();
-  const notes = JSON.parse(fs.readFileSync('db/db.json', 'utf8'));
+  //const notes = JSON.parse(fs.readFileSync('db/db.json', 'utf8'));
   notes.push(newNote);
   fs.writeFileSync('db/db.json', JSON.stringify(notes));
   res.json(newNote);
